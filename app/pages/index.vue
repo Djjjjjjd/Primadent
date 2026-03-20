@@ -20,6 +20,9 @@
       <CardOrthodont></CardOrthodont>
     </section>
   </div>
+  <div class="doctors">
+    <DoctorsSlider :ids="[1, 2, 3, 4, 5]" />
+  </div>
 </template>
 
 <script lang="ts" setup>
@@ -28,6 +31,7 @@ import CardTherapy from '~/components/CardTherapy.vue';
 import CardOrtho from '~/components/CardOrtho.vue';
 import CardParadontho from '~/components/CardParadontho.vue';
 import CardOrthodont from '~/components/CardOrthodont.vue';
+import DoctorsSlider from '~/components/DoctorsSlider.vue'
 </script>
 
 <style>
