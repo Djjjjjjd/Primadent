@@ -1,15 +1,12 @@
 <template>
   <div>
-    <Header/>
-    <slot />
-    <footer>FOOTER</footer>
+    <Header />
+    <main>
+      <slot />
+    </main>
   </div>
 </template>
 
-<script setup>
-
+<script setup lang="ts">
+import Header from '~/components/Header.vue'
 </script>
-
-<style>
-
-</style>
