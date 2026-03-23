@@ -34,6 +34,7 @@ body {
 }
 
 img {
+  display: block;
   max-width: 100%;
 }
 
@@ -70,8 +71,8 @@ a {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-height: 52px;
-  padding: 10px 30px;
+  min-height: 56px;
+  padding: 12px 28px;
   border: none;
   border-radius: 8px;
   background: var(--primary-color);
@@ -80,20 +81,19 @@ a {
   font-size: 20px;
   line-height: 1;
   transition: background 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
-
 }
 
 .button:hover {
   background: var(--primary-dark);
-  box-shadow: 0 0px 10px rgba(83, 98, 127, 0.4);
+  box-shadow: 0 0 10px rgba(83, 98, 127, 0.4);
   transform: translateY(-1px);
 }
 
 .button--small {
   min-height: 52px;
-  padding: 10px 30px;
+  padding: 10px 24px;
   border-radius: 10px;
-  font-size: 20px;
+  font-size: 18px;
 }
 
 .button--ghost {
@@ -105,12 +105,12 @@ a {
 
 .input {
   width: min(100%, 600px);
-  height: 100px;
-  min-height: 100px;
+  height: 84px;
+  min-height: 84px;
   padding: 0 28px;
-  border-radius: 20px;
+  border-radius: 18px;
   border: 1px solid rgba(140, 149, 170, 0.18);
-  background: #F5F6F8;
+  background: #f5f6f8;
   box-shadow: 0 0 10px rgba(24, 28, 39, 0.08);
   outline: none;
   font-size: 20px;
@@ -122,22 +122,47 @@ a {
 }
 
 .section-title {
-  font-size: 32px;
   margin-bottom: 40px;
+  font-size: 32px;
 }
 
 @media (max-width: 768px) {
-  h1,h2,h3,h4 {
+  h1,
+  h2,
+  h3,
+  h4 {
     font-size: 20px;
   }
-  p{
+
+  p {
     font-size: 15px;
   }
+
   .wrapper {
-    width: min(100% - 24px, calc(100% - 24px));
+    width: calc(100% - 24px);
   }
 
   body {
     font-size: 16px;
+  }
+
+  .button,
+  .button--small {
+    min-height: 56px;
+    padding: 12px 22px;
+    font-size: 20px;
+  }
+
+  .input {
+    height: 68px;
+    min-height: 68px;
+    padding: 0 20px;
+    border-radius: 16px;
+    font-size: 20px;
+  }
+
+  .section-title {
+    margin-bottom: 24px;
+    font-size: 24px;
   }
 }

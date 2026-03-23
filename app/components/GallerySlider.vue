@@ -30,7 +30,7 @@
           </SwiperSlide>
         </Swiper>
 
-        <button ref="nextBtn" class="slider-btn slider-btn--next" aria-label="Вперед">
+        <button ref="nextBtn" class="slider-btn slider-btn--next" aria-label="Вперёд">
           <span>&rarr;</span>
         </button>
       </div>
@@ -53,11 +53,11 @@ const prevBtn = ref<HTMLElement | null>(null)
 const nextBtn = ref<HTMLElement | null>(null)
 
 const images = [
-  { id: 1, src: portraitImage, alt: 'Фото работы 1' },
-  { id: 2, src: heroImage, alt: 'Фото работы 2' },
-  { id: 3, src: portraitImage, alt: 'Фото работы 3' },
-  { id: 4, src: heroImage, alt: 'Фото работы 4' },
-  { id: 5, src: portraitImage, alt: 'Фото работы 5' },
+  { id: 1, src: portraitImage, alt: 'Фото клиники и специалистов 1' },
+  { id: 2, src: heroImage, alt: 'Фото клиники и специалистов 2' },
+  { id: 3, src: portraitImage, alt: 'Фото клиники и специалистов 3' },
+  { id: 4, src: heroImage, alt: 'Фото клиники и специалистов 4' },
+  { id: 5, src: portraitImage, alt: 'Фото клиники и специалистов 5' },
 ]
 
 const onSwiper = async (swiper: SwiperInstance) => {
@@ -77,12 +77,12 @@ const onSwiper = async (swiper: SwiperInstance) => {
 
 <style scoped>
 .gallery-slider {
-  padding: 18px 0 94px;
+  padding: 8px 0 94px;
 }
 
 .gallery-slider__head {
   text-align: left;
-  margin-bottom: 40px;
+  margin-bottom: 28px;
 }
 
 .gallery-slider__title {
@@ -143,18 +143,17 @@ const onSwiper = async (swiper: SwiperInstance) => {
 }
 
 .gallery-slide {
-  width: 380px;
+  width: min(100%, 300px);
   flex-shrink: 0;
 }
 
 .gallery-card {
-  width: 380px;
-  max-width: 100%;
+  width: 100%;
   height: 300px;
   overflow: hidden;
-  border-radius: 10px;
+  border-radius: 16px;
   background: #edf1f7;
-  box-shadow: 0 12px 30px rgba(28, 35, 50, 0.08);
+  box-shadow: 0 16px 32px rgba(38, 48, 73, 0.12);
 }
 
 .gallery-card img {
@@ -165,31 +164,31 @@ const onSwiper = async (swiper: SwiperInstance) => {
 
 @media (max-width: 767px) {
   .gallery-slider {
-    padding: 12px 0 72px;
+    padding: 8px 0 56px;
   }
 
   .slider-shell::before,
   .slider-shell::after {
-    width: 52px;
+    width: 24px;
   }
 
   .slider-btn {
-    width: 42px;
-    height: 42px;
+    display: none;
   }
 
   .gallery-swiper {
-    padding: 0 36px;
+    padding: 0;
   }
 
   .gallery-slide {
-    width: calc(100vw - 72px);
-    max-width: 380px;
+    width: calc(100vw - 24px);
+    max-width: none;
   }
 
   .gallery-card {
     width: 100%;
-    height: 240px;
+    height: 300px;
+    border-radius: 14px;
   }
 }
 </style>

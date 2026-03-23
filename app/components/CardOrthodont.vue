@@ -1,7 +1,7 @@
 <template>
   <div class="card">
     <div class="card_image">
-      <img src="/images/icon/orthodont.svg" alt="Ортодонтия" />
+      <img :src="orthodontIcon" alt="Ортодонтия" />
     </div>
     <div class="card_content">
       <h2 class="card_title">Ортодонтия</h2>
@@ -17,4 +17,5 @@
 
 <script setup lang="ts">
 import '~/assets/css/card.css'
+import orthodontIcon from '~/images/icon/orthodont.svg'
 </script>

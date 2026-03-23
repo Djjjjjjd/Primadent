@@ -47,7 +47,7 @@
           </SwiperSlide>
         </Swiper>
 
-        <button ref="nextBtn" class="slider-btn slider-btn--next" aria-label="Вперед">
+        <button ref="nextBtn" class="slider-btn slider-btn--next" aria-label="Вперёд">
           <span>&rarr;</span>
         </button>
       </div>
@@ -97,58 +97,58 @@ const onSwiper = async (swiper: SwiperInstance) => {
 const doctorsBase: Doctor[] = [
   {
     id: 1,
-    name: 'Имя',
-    role: 'Специализация',
-    description: 'Краткое описание',
+    name: 'Иван Петров',
+    role: 'Стоматолог-хирург',
+    description: 'Удаление, имплантация и бережное восстановление улыбки.',
     image: portraitImage,
   },
   {
     id: 2,
-    name: 'Имя',
-    role: 'Специализация',
-    description: 'Краткое описание',
+    name: 'Анна Миронова',
+    role: 'Терапевт',
+    description: 'Лечение кариеса, реставрации и терапия под микроскопом.',
     image: portraitImage,
   },
   {
     id: 3,
-    name: 'Имя',
-    role: 'Специализация',
-    description: 'Краткое описание',
+    name: 'Роман Климов',
+    role: 'Ортопед',
+    description: 'Коронки, виниры и комплексное протезирование с точной посадкой.',
     image: portraitImage,
   },
   {
     id: 4,
-    name: 'Имя',
-    role: 'Специализация',
-    description: 'Краткое описание',
+    name: 'Елена Савина',
+    role: 'Ортодонт',
+    description: 'Исправление прикуса, брекет-системы и сопровождение на всех этапах.',
     image: portraitImage,
   },
   {
     id: 5,
-    name: 'Имя',
-    role: 'Специализация',
-    description: 'Краткое описание',
+    name: 'Мария Волкова',
+    role: 'Пародонтолог',
+    description: 'Профилактика, гигиена и лечение тканей пародонта.',
     image: portraitImage,
   },
   {
     id: 6,
-    name: 'Имя',
-    role: 'Специализация',
-    description: 'Краткое описание',
+    name: 'Алексей Орлов',
+    role: 'Имплантолог',
+    description: 'Планирование имплантации с современными цифровыми протоколами.',
     image: portraitImage,
   },
   {
     id: 7,
-    name: 'Имя',
-    role: 'Специализация',
-    description: 'Краткое описание',
+    name: 'Ольга Данилова',
+    role: 'Гигиенист',
+    description: 'Поддерживающий уход и профессиональная чистка для здоровой улыбки.',
     image: portraitImage,
   },
   {
     id: 8,
-    name: 'Имя',
-    role: 'Специализация',
-    description: 'Краткое описание',
+    name: 'Никита Беляев',
+    role: 'Детский стоматолог',
+    description: 'Деликатный подход и спокойная атмосфера для маленьких пациентов.',
     image: portraitImage,
   },
 ]
@@ -171,7 +171,7 @@ const selectedDoctors = computed(() => {
 }
 
 .doctors-slider__title {
-  margin-bottom: 60px;
+  margin-bottom: 40px;
 }
 
 .slider-shell {
@@ -241,11 +241,11 @@ const selectedDoctors = computed(() => {
   height: 100%;
   width: 430px;
   max-width: 100%;
-  min-height: 670px;
+  min-height: 640px;
   padding: 40px;
   border-radius: 18px;
   background: var(--surface-color);
-  box-shadow: 0 0 10px rgba(28, 35, 50, 0.4);
+  box-shadow: 0 18px 34px rgba(38, 48, 73, 0.12);
 }
 
 .doctor-card__image {
@@ -274,7 +274,7 @@ const selectedDoctors = computed(() => {
 }
 
 .doctor-card__desc {
-  margin-bottom: 60px;
+  margin-bottom: 40px;
   color: #3e4552;
   font-size: 20px;
 }
@@ -285,42 +285,55 @@ const selectedDoctors = computed(() => {
 
 @media (max-width: 767px) {
   .doctors-slider {
-    padding: 24px 0 64px;
+    padding: 24px 0 56px;
   }
 
   .slider-shell::before,
   .slider-shell::after {
-    width: 72px;
+    width: 36px;
   }
 
   .slider-btn {
-    width: 42px;
-    height: 42px;
-  }
-
-  .slider-btn--prev {
-    left: 8px;
-  }
-
-  .slider-btn--next {
-    right: 8px;
+    display: none;
   }
 
   .doctors-swiper {
     width: calc(100vw - 24px);
-    padding: 16px 44px;
-    margin: -16px auto;
+    padding: 12px 6px;
+    margin: -12px auto;
   }
 
   .doctor-slide {
-    width: calc(100vw - 72px);
+    width: calc(100vw - 36px);
     max-width: 430px;
   }
 
   .doctor-card {
     width: 100%;
-    min-height: 560px;
-    padding: 24px;
+    min-height: auto;
+    padding: 18px 18px 20px;
+    border-radius: 16px;
+  }
+
+  .doctor-card__image {
+    margin-bottom: 18px;
+  }
+
+  .doctor-card__name {
+    font-size: 22px;
+  }
+
+  .doctor-card__role,
+  .doctor-card__desc {
+    font-size: 15px;
+  }
+
+  .doctor-card__desc {
+    margin-bottom: 22px;
+  }
+
+  .doctor-card__btn {
+    width: 100%;
   }
 }
 </style>

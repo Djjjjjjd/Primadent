@@ -1,7 +1,7 @@
 <template>
   <div class="card">
     <div class="card_image">
-      <img src="/images/icon/paradontho.svg" alt="Пародонтология" />
+      <img :src="paradonthoIcon" alt="Пародонтология" />
     </div>
     <div class="card_content">
       <h2 class="card_title">Пародонтология</h2>
@@ -17,4 +17,5 @@
 
 <script setup lang="ts">
 import '~/assets/css/card.css'
+import paradonthoIcon from '~/images/icon/paradontho.svg'
 </script>
