@@ -41,7 +41,7 @@
       </div>
     </section>
 
-    <DoctorsSlider :ids="[1, 2, 3, 4, 5]" />
+    <!-- <DoctorsSlider :ids="[1, 2, 3, 4, 5]" /> -->
 
     <GallerySlider />
 
