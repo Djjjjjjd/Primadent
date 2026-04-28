@@ -79,6 +79,34 @@
 
     <GallerySlider />
 
+    <section class="seo-content" aria-labelledby="seo-title">
+      <div class="wrapper seo-content__inner">
+        <div>
+          <h2 id="seo-title" class="section-title seo-content__title">
+            Стоматология Примадент в Донецке
+          </h2>
+          <p>
+            Примадент — стоматологическая клиника в Донецке по адресу ул. Челюскинцев, 167.
+            Мы проводим консультации, диагностику, терапевтическое лечение зубов, хирургическую
+            стоматологию, ортопедию, ортодонтию и пародонтологическое лечение.
+          </p>
+          <p>
+            Пациенты обращаются к нам за лечением кариеса, восстановлением зубов, протезированием,
+            исправлением прикуса, удалением зубов и комплексным планом лечения. Оставьте заявку на
+            сайте, и администратор свяжется с вами для записи на удобное время.
+          </p>
+        </div>
+
+        <ul class="seo-content__list" aria-label="Услуги стоматологии Примадент">
+          <li>Лечение зубов и кариеса</li>
+          <li>Хирургическая стоматология</li>
+          <li>Ортопедическая стоматология и протезирование</li>
+          <li>Ортодонтия и исправление прикуса</li>
+          <li>Пародонтология и профилактика</li>
+        </ul>
+      </div>
+    </section>
+
     <section class="consultation" id="contacts">
       <div class="wrapper consultation__inner">
         <div class="consultation__content">
@@ -207,11 +235,83 @@ const NAME_PATTERN = /^[A-Za-zА-Яа-яЁё\s-]{2,60}$/
 const PHONE_DIGITS_MIN = 10
 const PHONE_DIGITS_MAX = 15
 const HERO_SLIDE_INTERVAL = 2000
+const config = useRuntimeConfig()
+const siteUrl = String(config.public.siteUrl).replace(/\/$/, '')
+const siteName = String(config.public.siteName)
+const pageTitle = 'Стоматология Примадент в Донецке | Запись на консультацию'
+const pageDescription = 'Стоматологическая клиника Примадент в Донецке: лечение зубов, хирургия, ортопедия, ортодонтия, пародонтология и консультации. Адрес: ул. Челюскинцев, 167.'
+const pageKeywords = 'стоматология Донецк, стоматолог Донецк, Примадент, лечение зубов Донецк, протезирование зубов, ортодонт Донецк, хирургическая стоматология'
 
 const heroSlides = heroImages
 
 const activeHeroSlide = ref(0)
 let heroSlideTimer: ReturnType<typeof window.setInterval> | undefined
+
+useSeoMeta({
+  title: pageTitle,
+  description: pageDescription,
+  keywords: pageKeywords,
+  ogTitle: pageTitle,
+  ogDescription: pageDescription,
+  ogType: 'website',
+  ogUrl: siteUrl,
+  ogSiteName: siteName,
+  ogImage: `${siteUrl}${heroSlides[0]?.src || '/favicon.ico'}`,
+  ogLocale: 'ru_RU',
+  twitterCard: 'summary_large_image',
+  twitterTitle: pageTitle,
+  twitterDescription: pageDescription,
+  twitterImage: `${siteUrl}${heroSlides[0]?.src || '/favicon.ico'}`,
+  robots: 'index, follow, max-image-preview:large',
+})
+
+useHead({
+  link: [
+    { rel: 'canonical', href: siteUrl },
+  ],
+  script: [
+    {
+      type: 'application/ld+json',
+      innerHTML: JSON.stringify({
+        '@context': 'https://schema.org',
+        '@type': 'Dentist',
+        '@id': `${siteUrl}/#dentist`,
+        name: siteName,
+        url: siteUrl,
+        image: `${siteUrl}${heroSlides[0]?.src || '/favicon.ico'}`,
+        logo: `${siteUrl}/favicon.ico`,
+        description: pageDescription,
+        telephone: '+79493455165',
+        email: 'PrimaDentStomat@gmail.ru',
+        priceRange: '$$',
+        address: {
+          '@type': 'PostalAddress',
+          streetAddress: 'ул. Челюскинцев, 167',
+          addressLocality: 'Донецк',
+          postalCode: '83015',
+          addressCountry: 'RU',
+        },
+        openingHoursSpecification: [
+          {
+            '@type': 'OpeningHoursSpecification',
+            dayOfWeek: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
+            opens: '09:00',
+            closes: '18:00',
+          },
+        ],
+        medicalSpecialty: [
+          'Dentistry',
+          'Orthodontics',
+          'Periodontics',
+          'OralSurgery',
+        ],
+        sameAs: [
+          'https://yandex.com/maps/-/CDRAyD82',
+        ],
+      }),
+    },
+  ],
+})
 
 const heroForm = reactive<LeadForm>({
   name: '',
@@ -484,6 +584,37 @@ const submitLead = async (form: LeadForm) => {
   justify-self: center;
 }
 
+.seo-content {
+  padding: 0 0 74px;
+}
+
+.seo-content__inner {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 360px;
+  gap: 48px;
+  align-items: start;
+}
+
+.seo-content__title {
+  margin-bottom: 18px;
+}
+
+.seo-content p + p {
+  margin-top: 16px;
+}
+
+.seo-content__list {
+  display: grid;
+  gap: 12px;
+  padding: 24px 24px 24px 42px;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  background: var(--surface-color);
+  color: var(--text-color);
+  font-size: 18px;
+  line-height: 1.4;
+}
+
 .consultation {
   padding: 28px 0 86px;
 }
@@ -740,6 +871,20 @@ const submitLead = async (form: LeadForm) => {
 
   .consultation {
     padding: 16px 0 52px;
+  }
+
+  .seo-content {
+    padding: 0 0 44px;
+  }
+
+  .seo-content__inner {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+
+  .seo-content__list {
+    padding: 18px 18px 18px 34px;
+    font-size: 15px;
   }
 
   .consultation__inner {
