@@ -23,9 +23,9 @@
           @swiper="onSwiper"
           class="gallery-swiper"
         >
-          <SwiperSlide v-for="image in images" :key="image.id" class="gallery-slide">
+          <SwiperSlide v-for="image in galleryImages" :key="image.id" class="gallery-slide">
             <article class="gallery-card">
-              <img :src="image.src" :alt="image.alt" />
+              <img :src="image.src" :alt="image.alt" loading="lazy" decoding="async" />
             </article>
           </SwiperSlide>
         </Swiper>
@@ -43,22 +43,13 @@ import { nextTick, ref } from 'vue'
 import { Swiper, SwiperSlide } from 'swiper/vue'
 import { Mousewheel, Navigation } from 'swiper/modules'
 import type { Swiper as SwiperInstance } from 'swiper/types'
-import heroImage from '~/images/hero.webp'
-import portraitImage from '~/images/doctors/portrait.jpg'
+import { galleryImages } from '~/utils/sliderImages'
 
 import 'swiper/css'
 import 'swiper/css/navigation'
 
 const prevBtn = ref<HTMLElement | null>(null)
 const nextBtn = ref<HTMLElement | null>(null)
-
-const images = [
-  { id: 1, src: portraitImage, alt: 'Фото клиники и специалистов 1' },
-  { id: 2, src: heroImage, alt: 'Фото клиники и специалистов 2' },
-  { id: 3, src: portraitImage, alt: 'Фото клиники и специалистов 3' },
-  { id: 4, src: heroImage, alt: 'Фото клиники и специалистов 4' },
-  { id: 5, src: portraitImage, alt: 'Фото клиники и специалистов 5' },
-]
 
 const onSwiper = async (swiper: SwiperInstance) => {
   await nextTick()

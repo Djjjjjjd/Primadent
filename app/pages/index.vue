@@ -1,6 +1,19 @@
 ﻿<template>
-  <div class="page" :style="heroStyle">
+  <div class="page">
     <section class="hero">
+      <div class="hero__slider" aria-hidden="true">
+        <img
+          v-for="(slide, index) in heroSlides"
+          :key="slide.id"
+          :src="slide.src"
+          :alt="slide.alt"
+          class="hero__slide"
+          :class="{ 'hero__slide--active': index === activeHeroSlide }"
+          :loading="index === 0 ? 'eager' : 'lazy'"
+          decoding="async"
+          :fetchpriority="index === 0 ? 'high' : 'auto'"
+        />
+      </div>
       <div class="wrapper hero__inner">
         <div class="hero__content">
           <p class="hero__license">
@@ -31,7 +44,7 @@
                 type="tel"
                 class="input"
                 :class="{ 'input--error': heroForm.errors.phone }"
-                placeholder="Номер телефона"
+                placeholder="Телефон / номер Telegram"
                 autocomplete="tel"
                 inputmode="tel"
               />
@@ -92,7 +105,7 @@
                 type="tel"
                 class="input"
                 :class="{ 'input--error': consultationForm.errors.phone }"
-                placeholder="Номер телефона"
+                placeholder="Телефон / номер Telegram"
                 autocomplete="tel"
                 inputmode="tel"
               />
@@ -164,7 +177,7 @@
 </template>
 
 <script lang="ts" setup>
-import { reactive } from 'vue'
+import { onBeforeUnmount, onMounted, reactive, ref } from 'vue'
 import CardSurgical from '~/components/CardSurgical.vue'
 import CardTherapy from '~/components/CardTherapy.vue'
 import CardOrtho from '~/components/CardOrtho.vue'
@@ -172,7 +185,7 @@ import CardParadontho from '~/components/CardParadontho.vue'
 import CardOrthodont from '~/components/CardOrthodont.vue'
 import DoctorsSlider from '~/components/DoctorsSlider.vue'
 import GallerySlider from '~/components/GallerySlider.vue'
-import heroImage from '~/images/hero.webp'
+import { heroImages } from '~/utils/sliderImages'
 import consultationArt from '~/images/consultation_art.png'
 import logoBlack from '~/images/icon/logo_black.svg'
 import telegramIcon from '~/images/icon/icons_telegram.svg'
@@ -193,10 +206,12 @@ type LeadForm = {
 const NAME_PATTERN = /^[A-Za-zА-Яа-яЁё\s-]{2,60}$/
 const PHONE_DIGITS_MIN = 10
 const PHONE_DIGITS_MAX = 15
+const HERO_SLIDE_INTERVAL = 2000
 
-const heroStyle = {
-  '--hero-image': `url(${heroImage})`,
-}
+const heroSlides = heroImages
+
+const activeHeroSlide = ref(0)
+let heroSlideTimer: ReturnType<typeof window.setInterval> | undefined
 
 const heroForm = reactive<LeadForm>({
   name: '',
@@ -228,6 +243,18 @@ const toast = reactive({
   text: '',
 })
 
+onMounted(() => {
+  heroSlideTimer = window.setInterval(() => {
+    activeHeroSlide.value = (activeHeroSlide.value + 1) % heroSlides.length
+  }, HERO_SLIDE_INTERVAL)
+})
+
+onBeforeUnmount(() => {
+  if (heroSlideTimer) {
+    window.clearInterval(heroSlideTimer)
+  }
+})
+
 const validateLeadForm = (form: LeadForm) => {
   const normalizedName = form.name.replace(/\s+/g, ' ').trim()
   const normalizedPhone = form.phone.replace(/[^\d+]/g, '')
@@ -245,9 +272,9 @@ const validateLeadForm = (form: LeadForm) => {
   }
 
   if (!normalizedPhone) {
-    form.errors.phone = 'Введите номер телефона.'
+    form.errors.phone = 'Введите телефон или номер Telegram.'
   } else if (phoneDigits.length < PHONE_DIGITS_MIN || phoneDigits.length > PHONE_DIGITS_MAX) {
-    form.errors.phone = 'Введите корректный номер телефона.'
+    form.errors.phone = 'Введите корректный телефон или номер Telegram.'
   } else if (normalizedPhone.includes('+') && !normalizedPhone.startsWith('+')) {
     form.errors.phone = 'Плюс можно указать только в начале номера.'
   }
@@ -313,13 +340,57 @@ const submitLead = async (form: LeadForm) => {
 .hero {
   position: relative;
   min-height: 100svh;
+  overflow: hidden;
+  background: #edf1f7;
+}
+
+.hero::before,
+.hero::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+}
+
+.hero::before {
   background:
-    linear-gradient(90deg, rgba(255, 255, 255, 0.98) 0%, rgba(255, 255, 255, 0.82) 34%, rgba(255, 255, 255, 0.16) 66%),
-    var(--hero-image) center right / cover no-repeat;
-  background-attachment: fixed;
+    linear-gradient(90deg, rgba(255, 255, 255, 0.98) 0%, rgba(255, 255, 255, 0.82) 34%, rgba(255, 255, 255, 0.18) 66%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.2) 0%, rgba(237, 241, 247, 0.2) 100%);
+}
+
+.hero::after {
+  background: radial-gradient(circle at 78% 42%, rgba(255, 255, 255, 0) 0%, rgba(27, 36, 56, 0.18) 100%);
+  mix-blend-mode: multiply;
+}
+
+.hero__slider {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+}
+
+.hero__slide {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center right;
+  opacity: 0;
+  transform: scale(1.045);
+  transition: opacity 1.35s ease, transform 2.4s ease;
+  will-change: opacity, transform;
+}
+
+.hero__slide--active {
+  opacity: 1;
+  transform: scale(1);
 }
 
 .hero__inner {
+  position: relative;
+  z-index: 2;
   display: flex;
   align-items: center;
   min-height: 100svh;
@@ -595,10 +666,18 @@ const submitLead = async (form: LeadForm) => {
 @media (max-width: 768px) {
   .hero {
     min-height: 100svh;
-    background:
-      linear-gradient(180deg, rgba(255, 255, 255, 0.98) 0%, rgba(255, 255, 255, 0.84) 42%, rgba(255, 255, 255, 0.72) 100%),
-      var(--hero-image) 64% top / cover no-repeat;
-    background-attachment: fixed;
+  }
+
+  .hero::before {
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.98) 0%, rgba(255, 255, 255, 0.86) 42%, rgba(255, 255, 255, 0.74) 100%);
+  }
+
+  .hero::after {
+    background: linear-gradient(180deg, rgba(26, 26, 26, 0.02) 0%, rgba(26, 26, 26, 0.16) 100%);
+  }
+
+  .hero__slide {
+    object-position: 64% top;
   }
 
   .hero__inner {
