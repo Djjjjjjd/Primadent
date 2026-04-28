@@ -14,8 +14,29 @@
           </p>
 
           <form class="hero__form" @submit.prevent="submitLead(heroForm)">
-            <input v-model.trim="heroForm.name" type="text" class="input" placeholder="Ваше имя" />
-            <input v-model.trim="heroForm.phone" type="tel" class="input" placeholder="Номер телефона" />
+            <div class="form-field">
+              <input
+                v-model.trim="heroForm.name"
+                type="text"
+                class="input"
+                :class="{ 'input--error': heroForm.errors.name }"
+                placeholder="Ваше имя"
+                autocomplete="name"
+              />
+              <p v-if="heroForm.errors.name" class="field-error">{{ heroForm.errors.name }}</p>
+            </div>
+            <div class="form-field">
+              <input
+                v-model.trim="heroForm.phone"
+                type="tel"
+                class="input"
+                :class="{ 'input--error': heroForm.errors.phone }"
+                placeholder="Номер телефона"
+                autocomplete="tel"
+                inputmode="tel"
+              />
+              <p v-if="heroForm.errors.phone" class="field-error">{{ heroForm.errors.phone }}</p>
+            </div>
             <button type="submit" class="button hero__submit" :disabled="heroForm.pending">
               {{ heroForm.pending ? 'Отправка...' : 'Отправить' }}
             </button>
@@ -54,8 +75,29 @@
           </p>
 
           <form class="consultation__form" @submit.prevent="submitLead(consultationForm)">
-            <input v-model.trim="consultationForm.name" type="text" class="input" placeholder="Ваше имя" />
-            <input v-model.trim="consultationForm.phone" type="tel" class="input" placeholder="Номер телефона" />
+            <div class="form-field">
+              <input
+                v-model.trim="consultationForm.name"
+                type="text"
+                class="input"
+                :class="{ 'input--error': consultationForm.errors.name }"
+                placeholder="Ваше имя"
+                autocomplete="name"
+              />
+              <p v-if="consultationForm.errors.name" class="field-error">{{ consultationForm.errors.name }}</p>
+            </div>
+            <div class="form-field">
+              <input
+                v-model.trim="consultationForm.phone"
+                type="tel"
+                class="input"
+                :class="{ 'input--error': consultationForm.errors.phone }"
+                placeholder="Номер телефона"
+                autocomplete="tel"
+                inputmode="tel"
+              />
+              <p v-if="consultationForm.errors.phone" class="field-error">{{ consultationForm.errors.phone }}</p>
+            </div>
             <div class="consultation__actions">
               <button type="submit" class="button" :disabled="consultationForm.pending">
                 {{ consultationForm.pending ? 'Отправка...' : 'Отправить' }}
@@ -111,6 +153,13 @@
         </div>
       </div>
     </footer>
+
+    <Transition name="toast">
+      <div v-if="toast.visible" class="toast" role="status" aria-live="polite">
+        <strong>{{ toast.title }}</strong>
+        <span>{{ toast.text }}</span>
+      </div>
+    </Transition>
   </div>
 </template>
 
@@ -135,10 +184,15 @@ type LeadForm = {
   pending: boolean
   status: 'success' | 'error' | ''
   message: string
+  errors: {
+    name: string
+    phone: string
+  }
 }
 
-const NAME_PATTERN = /^[A-Za-zА-Яа-яЁё\s-]{2,}$/
+const NAME_PATTERN = /^[A-Za-zА-Яа-яЁё\s-]{2,60}$/
 const PHONE_DIGITS_MIN = 10
+const PHONE_DIGITS_MAX = 15
 
 const heroStyle = {
   '--hero-image': `url(${heroImage})`,
@@ -150,6 +204,10 @@ const heroForm = reactive<LeadForm>({
   pending: false,
   status: '',
   message: '',
+  errors: {
+    name: '',
+    phone: '',
+  },
 })
 
 const consultationForm = reactive<LeadForm>({
@@ -158,6 +216,16 @@ const consultationForm = reactive<LeadForm>({
   pending: false,
   status: '',
   message: '',
+  errors: {
+    name: '',
+    phone: '',
+  },
+})
+
+const toast = reactive({
+  visible: false,
+  title: '',
+  text: '',
 })
 
 const validateLeadForm = (form: LeadForm) => {
@@ -165,27 +233,44 @@ const validateLeadForm = (form: LeadForm) => {
   const normalizedPhone = form.phone.replace(/[^\d+]/g, '')
   const phoneDigits = normalizedPhone.replace(/\D/g, '')
 
-  if (!normalizedName || !normalizedPhone) {
-    form.status = 'error'
-    form.message = 'Заполните имя и телефон.'
-    return false
+  form.errors.name = ''
+  form.errors.phone = ''
+  form.status = ''
+  form.message = ''
+
+  if (!normalizedName) {
+    form.errors.name = 'Введите имя.'
+  } else if (!NAME_PATTERN.test(normalizedName)) {
+    form.errors.name = 'Имя должно содержать только буквы, пробел или дефис.'
   }
 
-  if (!NAME_PATTERN.test(normalizedName)) {
-    form.status = 'error'
-    form.message = 'Введите корректное имя.'
-    return false
+  if (!normalizedPhone) {
+    form.errors.phone = 'Введите номер телефона.'
+  } else if (phoneDigits.length < PHONE_DIGITS_MIN || phoneDigits.length > PHONE_DIGITS_MAX) {
+    form.errors.phone = 'Введите корректный номер телефона.'
+  } else if (normalizedPhone.includes('+') && !normalizedPhone.startsWith('+')) {
+    form.errors.phone = 'Плюс можно указать только в начале номера.'
   }
 
-  if (phoneDigits.length < PHONE_DIGITS_MIN) {
+  if (form.errors.name || form.errors.phone) {
     form.status = 'error'
-    form.message = 'Введите корректный номер телефона.'
+    form.message = 'Проверьте поля формы.'
     return false
   }
 
   form.name = normalizedName
   form.phone = normalizedPhone
   return true
+}
+
+const showSuccessToast = () => {
+  toast.title = 'Заявка отправлена'
+  toast.text = 'Мы скоро свяжемся с вами.'
+  toast.visible = true
+
+  window.setTimeout(() => {
+    toast.visible = false
+  }, 4200)
 }
 
 const submitLead = async (form: LeadForm) => {
@@ -210,6 +295,7 @@ const submitLead = async (form: LeadForm) => {
     form.phone = ''
     form.status = 'success'
     form.message = 'Заявка отправлена. Мы скоро свяжемся с вами.'
+    showSuccessToast()
   } catch {
     form.status = 'error'
     form.message = 'Не удалось отправить заявку. Попробуйте ещё раз.'
@@ -277,6 +363,22 @@ const submitLead = async (form: LeadForm) => {
   width: fit-content;
   min-width: 168px;
   margin-top: 18px;
+}
+
+.form-field {
+  display: grid;
+  gap: 6px;
+}
+
+.input--error {
+  border-color: #c44141;
+  box-shadow: 0 0 0 3px rgba(196, 65, 65, 0.12);
+}
+
+.field-error {
+  font-size: 14px;
+  line-height: 1.35;
+  color: #c44141;
 }
 
 .form-status {
@@ -440,6 +542,44 @@ const submitLead = async (form: LeadForm) => {
   border: 0;
 }
 
+.toast {
+  position: fixed;
+  right: 24px;
+  bottom: 24px;
+  z-index: 30;
+  display: grid;
+  gap: 4px;
+  width: min(360px, calc(100vw - 32px));
+  padding: 16px 18px;
+  border: 1px solid rgba(47, 122, 72, 0.2);
+  border-radius: 8px;
+  background: #ffffff;
+  box-shadow: 0 16px 40px rgba(26, 26, 26, 0.16);
+  color: #1a1a1a;
+}
+
+.toast strong {
+  color: #2f7a48;
+  font-size: 18px;
+  line-height: 1.2;
+}
+
+.toast span {
+  font-size: 15px;
+  line-height: 1.35;
+}
+
+.toast-enter-active,
+.toast-leave-active {
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.toast-enter-from,
+.toast-leave-to {
+  opacity: 0;
+  transform: translateY(12px);
+}
+
 @media (max-width: 1024px) {
   .consultation__inner,
   .footer__inner {
@@ -499,6 +639,10 @@ const submitLead = async (form: LeadForm) => {
 
   .form-status {
     font-size: 14px;
+  }
+
+  .field-error {
+    font-size: 13px;
   }
 
   .services {
@@ -580,6 +724,11 @@ const submitLead = async (form: LeadForm) => {
   .footer__map,
   .footer__map iframe {
     min-height: 280px;
+  }
+
+  .toast {
+    right: 16px;
+    bottom: 16px;
   }
 }
 </style>
