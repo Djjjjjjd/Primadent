@@ -18,7 +18,8 @@
         <div class="hero__content">
           <p class="hero__license">
             Лицензия:
-            <span class="hero__license-accent">Л041-01709-93/02968061</span>
+            
+            <a href='.assets/license.pdf' class="hero__license-accent">Л041-01709-93/02968061</a>
           </p>
 
           <h1 class="hero__title">Запишитесь на консультацию</h1>
@@ -144,7 +145,7 @@
                 {{ consultationForm.pending ? 'Отправка...' : 'Отправить' }}
               </button>
               <span class="consultation__or">или</span>
-              <a href="https://t.me/" class="consultation__social">
+              <a href="https://t.me/primadent1_bot" class="consultation__social">
                 <img :src="telegramIcon" alt="Telegram" />
               </a>
               <a href="https://wa.me/79493455165" class="consultation__social">
