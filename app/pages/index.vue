@@ -3,15 +3,15 @@
     <section class="hero">
       <div class="hero__slider" aria-hidden="true">
         <img
-          v-for="(slide, index) in heroSlides"
-          :key="slide.id"
-          :src="slide.src"
-          :alt="slide.alt"
+          :key="activeHeroImage.id"
+          :src="activeHeroImage.src"
+          :alt="activeHeroImage.alt"
           class="hero__slide"
-          :class="{ 'hero__slide--active': index === activeHeroSlide }"
-          :loading="index === 0 ? 'eager' : 'lazy'"
+          :class="{ 'hero__slide--active': heroImageReady }"
+          loading="eager"
           decoding="async"
-          :fetchpriority="index === 0 ? 'high' : 'auto'"
+          fetchpriority="high"
+          @load="heroImageReady = true"
         />
       </div>
       <div class="wrapper hero__inner">
@@ -54,7 +54,7 @@
             <button type="submit" class="button hero__submit" :disabled="heroForm.pending">
               {{ heroForm.pending ? 'Отправка...' : 'Отправить' }}
             </button>
-            <p v-if="heroForm.message" :class="['form-status', `form-status--${heroForm.status}`]">
+            <p v-if="heroForm.message && heroForm.status === 'error'" class="form-status form-status--error">
               {{ heroForm.message }}
             </p>
           </form>
@@ -78,7 +78,9 @@
 
     <!-- <DoctorsSlider :ids="[1, 2, 3, 4, 5]" /> -->
 
-    <GallerySlider />
+    <div ref="galleryMount" class="gallery-lazy-slot">
+      <LazyGallerySlider v-if="showGallery" />
+    </div>
 
     <section class="seo-content" aria-labelledby="seo-title">
       <div class="wrapper seo-content__inner">
@@ -153,8 +155,8 @@
               </a>
             </div>
             <p
-              v-if="consultationForm.message"
-              :class="['form-status', `form-status--${consultationForm.status}`]"
+              v-if="consultationForm.message && consultationForm.status === 'error'"
+              class="form-status form-status--error"
             >
               {{ consultationForm.message }}
             </p>
@@ -206,15 +208,13 @@
 </template>
 
 <script lang="ts" setup>
-import { onBeforeUnmount, onMounted, reactive, ref } from 'vue'
+import { computed, onBeforeUnmount, onMounted, reactive, ref, watch } from 'vue'
 import CardSurgical from '~/components/CardSurgical.vue'
 import CardTherapy from '~/components/CardTherapy.vue'
 import CardOrtho from '~/components/CardOrtho.vue'
 import CardParadontho from '~/components/CardParadontho.vue'
 import CardOrthodont from '~/components/CardOrthodont.vue'
-import DoctorsSlider from '~/components/DoctorsSlider.vue'
-import GallerySlider from '~/components/GallerySlider.vue'
-import { heroImages } from '~/utils/sliderImages'
+import { heroImages } from '~/utils/heroImages'
 import consultationArt from '~/images/consultation_art.png'
 import logoBlack from '~/images/icon/logo_black.svg'
 import telegramIcon from '~/images/icon/icons_telegram.svg'
@@ -246,7 +246,13 @@ const pageKeywords = 'стоматология Донецк, стоматоло�
 const heroSlides = heroImages
 
 const activeHeroSlide = ref(0)
+const activeHeroImage = computed(() => heroSlides[activeHeroSlide.value] || heroSlides[0])
+const heroImageReady = ref(true)
+const galleryMount = ref<HTMLElement | null>(null)
+const showGallery = ref(false)
 let heroSlideTimer: ReturnType<typeof window.setInterval> | undefined
+let preloadTimer: ReturnType<typeof window.setTimeout> | undefined
+let galleryObserver: IntersectionObserver | undefined
 
 useSeoMeta({
   title: pageTitle,
@@ -348,12 +354,47 @@ onMounted(() => {
   heroSlideTimer = window.setInterval(() => {
     activeHeroSlide.value = (activeHeroSlide.value + 1) % heroSlides.length
   }, HERO_SLIDE_INTERVAL)
+
+  preloadTimer = window.setTimeout(() => {
+    heroSlides.slice(1).forEach((slide) => {
+      const image = new Image()
+      image.decoding = 'async'
+      image.src = slide.src
+    })
+  }, 1200)
+
+  if ('IntersectionObserver' in window && galleryMount.value) {
+    galleryObserver = new IntersectionObserver(
+      ([entry]) => {
+        if (!entry?.isIntersecting) {
+          return
+        }
+
+        showGallery.value = true
+        galleryObserver?.disconnect()
+      },
+      { rootMargin: '600px 0px' },
+    )
+    galleryObserver.observe(galleryMount.value)
+  } else {
+    showGallery.value = true
+  }
 })
 
 onBeforeUnmount(() => {
   if (heroSlideTimer) {
     window.clearInterval(heroSlideTimer)
   }
+
+  if (preloadTimer) {
+    window.clearTimeout(preloadTimer)
+  }
+
+  galleryObserver?.disconnect()
+})
+
+watch(activeHeroSlide, () => {
+  heroImageReady.value = false
 })
 
 const validateLeadForm = (form: LeadForm) => {
@@ -422,7 +463,7 @@ const submitLead = async (form: LeadForm) => {
     form.name = ''
     form.phone = ''
     form.status = 'success'
-    form.message = 'Заявка отправлена. Мы скоро свяжемся с вами.'
+    form.message = ''
     showSuccessToast()
   } catch {
     form.status = 'error'
@@ -558,10 +599,6 @@ const submitLead = async (form: LeadForm) => {
   line-height: 1.4;
 }
 
-.form-status--success {
-  color: #2f7a48;
-}
-
 .form-status--error {
   color: #c44141;
 }
@@ -583,6 +620,10 @@ const submitLead = async (form: LeadForm) => {
   grid-column: 1 / -1;
   width: min(100%, 520px);
   justify-self: center;
+}
+
+.gallery-lazy-slot {
+  min-height: 430px;
 }
 
 .seo-content {
@@ -868,6 +909,10 @@ const submitLead = async (form: LeadForm) => {
 
   .services__wide {
     width: 100%;
+  }
+
+  .gallery-lazy-slot {
+    min-height: 380px;
   }
 
   .consultation {

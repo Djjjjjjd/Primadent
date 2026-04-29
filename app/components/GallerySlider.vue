@@ -43,7 +43,7 @@ import { nextTick, ref } from 'vue'
 import { Swiper, SwiperSlide } from 'swiper/vue'
 import { Mousewheel, Navigation } from 'swiper/modules'
 import type { Swiper as SwiperInstance } from 'swiper/types'
-import { galleryImages } from '~/utils/sliderImages'
+import { galleryImages } from '~/utils/galleryImages'
 
 import 'swiper/css'
 import 'swiper/css/navigation'
