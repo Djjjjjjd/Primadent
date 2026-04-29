@@ -27,7 +27,16 @@
             Мы свяжемся с вами, ответим на вопросы и подберём удобное время для визита в клинику.
           </p>
 
-          <form class="hero__form" @submit.prevent="submitLead(heroForm)">
+          <form class="hero__form" @focusin="markFormStarted(heroForm)" @submit.prevent="submitLead(heroForm)">
+            <input
+              v-model="heroForm.website"
+              type="text"
+              name="website"
+              class="honeypot"
+              tabindex="-1"
+              autocomplete="off"
+              aria-hidden="true"
+            />
             <div class="form-field">
               <input
                 v-model.trim="heroForm.name"
@@ -118,7 +127,16 @@
             Оставьте заявку, и мы перезвоним, чтобы подобрать удобное время и ответить на ваши вопросы.
           </p>
 
-          <form class="consultation__form" @submit.prevent="submitLead(consultationForm)">
+          <form class="consultation__form" @focusin="markFormStarted(consultationForm)" @submit.prevent="submitLead(consultationForm)">
+            <input
+              v-model="consultationForm.website"
+              type="text"
+              name="website"
+              class="honeypot"
+              tabindex="-1"
+              autocomplete="off"
+              aria-hidden="true"
+            />
             <div class="form-field">
               <input
                 v-model.trim="consultationForm.name"
@@ -223,6 +241,8 @@ import whatsAppIcon from '~/images/icon/icons_whatsapp.svg'
 type LeadForm = {
   name: string
   phone: string
+  website: string
+  formStartedAt: number
   pending: boolean
   status: 'success' | 'error' | ''
   message: string
@@ -232,7 +252,8 @@ type LeadForm = {
   }
 }
 
-const NAME_PATTERN = /^[A-Za-zА-Яа-яЁё\s-]{2,60}$/
+const NAME_PATTERN = /^[A-Za-zА-Яа-яЁё\s-]{2,80}$/
+const PHONE_PATTERN = /^[+\d\s()-]+$/
 const PHONE_DIGITS_MIN = 10
 const PHONE_DIGITS_MAX = 15
 const HERO_SLIDE_INTERVAL = 2000
@@ -323,6 +344,8 @@ useHead({
 const heroForm = reactive<LeadForm>({
   name: '',
   phone: '',
+  website: '',
+  formStartedAt: 0,
   pending: false,
   status: '',
   message: '',
@@ -335,6 +358,8 @@ const heroForm = reactive<LeadForm>({
 const consultationForm = reactive<LeadForm>({
   name: '',
   phone: '',
+  website: '',
+  formStartedAt: 0,
   pending: false,
   status: '',
   message: '',
@@ -399,7 +424,7 @@ watch(activeHeroSlide, () => {
 
 const validateLeadForm = (form: LeadForm) => {
   const normalizedName = form.name.replace(/\s+/g, ' ').trim()
-  const normalizedPhone = form.phone.replace(/[^\d+]/g, '')
+  const normalizedPhone = form.phone.replace(/\s+/g, ' ').trim()
   const phoneDigits = normalizedPhone.replace(/\D/g, '')
 
   form.errors.name = ''
@@ -410,15 +435,13 @@ const validateLeadForm = (form: LeadForm) => {
   if (!normalizedName) {
     form.errors.name = 'Введите имя.'
   } else if (!NAME_PATTERN.test(normalizedName)) {
-    form.errors.name = 'Имя должно содержать только буквы, пробел или дефис.'
+    form.errors.name = 'Имя должно содержать от 2 до 80 символов.'
   }
 
   if (!normalizedPhone) {
     form.errors.phone = 'Введите телефон или номер Telegram.'
-  } else if (phoneDigits.length < PHONE_DIGITS_MIN || phoneDigits.length > PHONE_DIGITS_MAX) {
+  } else if (!PHONE_PATTERN.test(normalizedPhone) || phoneDigits.length < PHONE_DIGITS_MIN || phoneDigits.length > PHONE_DIGITS_MAX) {
     form.errors.phone = 'Введите корректный телефон или номер Telegram.'
-  } else if (normalizedPhone.includes('+') && !normalizedPhone.startsWith('+')) {
-    form.errors.phone = 'Плюс можно указать только в начале номера.'
   }
 
   if (form.errors.name || form.errors.phone) {
@@ -430,6 +453,12 @@ const validateLeadForm = (form: LeadForm) => {
   form.name = normalizedName
   form.phone = normalizedPhone
   return true
+}
+
+const markFormStarted = (form: LeadForm) => {
+  if (!form.formStartedAt) {
+    form.formStartedAt = Date.now()
+  }
 }
 
 const showSuccessToast = () => {
@@ -452,22 +481,27 @@ const submitLead = async (form: LeadForm) => {
   form.message = ''
 
   try {
-    await $fetch('/api/telegram', {
+    await $fetch('/api/contact', {
       method: 'POST',
       body: {
         name: form.name,
         phone: form.phone,
+        message: '',
+        website: form.website,
+        formStartedAt: form.formStartedAt,
       },
     })
 
     form.name = ''
     form.phone = ''
+    form.website = ''
+    form.formStartedAt = 0
     form.status = 'success'
     form.message = ''
     showSuccessToast()
-  } catch {
+  } catch (error: any) {
     form.status = 'error'
-    form.message = 'Не удалось отправить заявку. Попробуйте ещё раз.'
+    form.message = error?.data?.message || 'Не удалось отправить заявку. Попробуйте ещё раз.'
   } finally {
     form.pending = false
   }
@@ -581,6 +615,15 @@ const submitLead = async (form: LeadForm) => {
 .form-field {
   display: grid;
   gap: 6px;
+}
+
+.honeypot {
+  position: absolute;
+  left: -10000px;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  pointer-events: none;
 }
 
 .input--error {
