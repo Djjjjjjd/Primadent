@@ -112,10 +112,28 @@ a {
   outline: none;
   font-size: 20px;
   color: var(--text-color);
+  transition:
+    border-color 0.24s ease,
+    box-shadow 0.24s ease,
+    transform 0.24s ease,
+    background 0.24s ease;
+  will-change: transform;
 }
 
 .input::placeholder {
   color: #667799;
+}
+
+.input:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 24px rgba(24, 28, 39, 0.12);
+}
+
+.input:focus {
+  border-color: rgba(102, 119, 153, 0.48);
+  background: #ffffff;
+  box-shadow: 0 14px 30px rgba(24, 28, 39, 0.14), 0 0 0 4px rgba(102, 119, 153, 0.1);
+  transform: translateY(-3px);
 }
 
 .section-title {

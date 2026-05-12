@@ -1,5 +1,5 @@
 ﻿<template>
-  <div class="page">
+  <div class="page" :class="{ 'page--reveals-ready': revealReady }">
     <section class="hero">
       <div class="hero__slider" aria-hidden="true">
         <img
@@ -19,7 +19,7 @@
           <p class="hero__license">
             Лицензия:
             
-            <a href='.assets/license.pdf' class="hero__license-accent">Л041-01709-93/02968061</a>
+            <a :href="licensePdf" class="hero__license-accent" target="_blank" rel="noopener">Л041-01709-93/02968061</a>
           </p>
 
           <h1 class="hero__title">Запишитесь на консультацию</h1>
@@ -60,9 +60,18 @@
               />
               <p v-if="heroForm.errors.phone" class="field-error">{{ heroForm.errors.phone }}</p>
             </div>
-            <button type="submit" class="button hero__submit" :disabled="heroForm.pending">
-              {{ heroForm.pending ? 'Отправка...' : 'Отправить' }}
-            </button>
+            <div class="hero__actions">
+              <button type="submit" class="button hero__submit" :disabled="heroForm.pending">
+                {{ heroForm.pending ? 'Отправка...' : 'Отправить' }}
+              </button>
+              <span class="consultation__or">или</span>
+              <a :href="telegramBotUrl" class="consultation__social" aria-label="Написать в Telegram">
+                <img :src="telegramIcon" alt="Telegram" />
+              </a>
+              <a :href="maxBotUrl" class="consultation__social" aria-label="Написать в MAX">
+                <img :src="maxIcon" alt="MAX" />
+              </a>
+            </div>
             <p v-if="heroForm.message && heroForm.status === 'error'" class="form-status form-status--error">
               {{ heroForm.message }}
             </p>
@@ -91,7 +100,7 @@
       <LazyGallerySlider v-if="showGallery" />
     </div>
 
-    <section class="seo-content" aria-labelledby="seo-title">
+    <section class="seo-content reveal" aria-labelledby="seo-title">
       <div class="wrapper seo-content__inner">
         <div>
           <h2 id="seo-title" class="section-title seo-content__title">
@@ -119,7 +128,7 @@
       </div>
     </section>
 
-    <section class="consultation" id="contacts">
+    <section class="consultation reveal" id="contacts">
       <div class="wrapper consultation__inner">
         <div class="consultation__content">
           <h2 class="section-title consultation__title">Запишитесь на консультацию</h2>
@@ -165,11 +174,11 @@
                 {{ consultationForm.pending ? 'Отправка...' : 'Отправить' }}
               </button>
               <span class="consultation__or">или</span>
-              <a href="https://t.me/primadent1_bot" class="consultation__social">
+              <a :href="telegramBotUrl" class="consultation__social" aria-label="Написать в Telegram">
                 <img :src="telegramIcon" alt="Telegram" />
               </a>
-              <a href="https://wa.me/79493455165" class="consultation__social">
-                <img :src="whatsAppIcon" alt="WhatsApp" />
+              <a :href="maxBotUrl" class="consultation__social" aria-label="Написать в MAX">
+                <img :src="maxIcon" alt="MAX" />
               </a>
             </div>
             <p
@@ -187,7 +196,7 @@
       </div>
     </section>
 
-    <footer class="footer">
+    <footer class="footer reveal">
       <div class="wrapper footer__inner">
         <div class="footer__info">
           <div class="footer__brand">
@@ -233,10 +242,11 @@ import CardOrtho from '~/components/CardOrtho.vue'
 import CardParadontho from '~/components/CardParadontho.vue'
 import CardOrthodont from '~/components/CardOrthodont.vue'
 import { heroImages } from '~/utils/heroImages'
+import licensePdf from '~/assets/license.pdf'
 import consultationArt from '~/images/consultation_art.png'
 import logoBlack from '~/images/icon/logo_black.svg'
 import telegramIcon from '~/images/icon/icons_telegram.svg'
-import whatsAppIcon from '~/images/icon/icons_whatsapp.svg'
+import maxIcon from '~/images/icon/icons_max.svg'
 
 type LeadForm = {
   name: string
@@ -263,6 +273,8 @@ const siteName = String(config.public.siteName)
 const pageTitle = 'Стоматология Примадент в Донецке | Запись на консультацию'
 const pageDescription = 'Стоматологическая клиника Примадент в Донецке: лечение зубов, хирургия, ортопедия, ортодонтия, пародонтология и консультации. Адрес: ул. Челюскинцев, 167.'
 const pageKeywords = 'стоматология Донецк, стоматолог Донецк, Примадент, лечение зубов Донецк, протезирование зубов, ортодонт Донецк, хирургическая стоматология'
+const telegramBotUrl = 'https://t.me/primadent1_bot'
+const maxBotUrl = 'https://max.ru/primadent1_bot'
 
 const heroSlides = heroImages
 
@@ -271,9 +283,11 @@ const activeHeroImage = computed(() => heroSlides[activeHeroSlide.value] || hero
 const heroImageReady = ref(true)
 const galleryMount = ref<HTMLElement | null>(null)
 const showGallery = ref(false)
+const revealReady = ref(false)
 let heroSlideTimer: ReturnType<typeof window.setInterval> | undefined
 let preloadTimer: ReturnType<typeof window.setTimeout> | undefined
 let galleryObserver: IntersectionObserver | undefined
+let revealObserver: IntersectionObserver | undefined
 
 useSeoMeta({
   title: pageTitle,
@@ -404,6 +418,39 @@ onMounted(() => {
   } else {
     showGallery.value = true
   }
+
+  const revealItems = Array.from(document.querySelectorAll<HTMLElement>('.reveal, .services .card'))
+  const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+
+  revealItems.forEach((item, index) => {
+    item.classList.add('reveal')
+    item.style.setProperty('--reveal-delay', `${Math.min(index % 6, 5) * 70}ms`)
+  })
+
+  if (prefersReducedMotion || !('IntersectionObserver' in window)) {
+    revealItems.forEach((item) => item.classList.add('reveal--visible'))
+    revealReady.value = true
+    return
+  }
+
+  revealObserver = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        if (!entry.isIntersecting) {
+          return
+        }
+
+        entry.target.classList.add('reveal--visible')
+        revealObserver?.unobserve(entry.target)
+      })
+    },
+    { rootMargin: '0px 0px -12% 0px', threshold: 0.16 },
+  )
+
+  revealItems.forEach((item) => revealObserver?.observe(item))
+  window.requestAnimationFrame(() => {
+    revealReady.value = true
+  })
 })
 
 onBeforeUnmount(() => {
@@ -416,6 +463,7 @@ onBeforeUnmount(() => {
   }
 
   galleryObserver?.disconnect()
+  revealObserver?.disconnect()
 })
 
 watch(activeHeroSlide, () => {
@@ -584,8 +632,29 @@ const submitLead = async (form: LeadForm) => {
 }
 
 .hero__license-accent {
+  position: relative;
+  display: inline-flex;
+  padding-bottom: 4px;
   color: var(--primary-color);
   font-weight: 700;
+}
+
+.hero__license-accent::after {
+  content: '';
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  height: 1px;
+  background: currentColor;
+  transform: scaleX(0);
+  transform-origin: right;
+  transition: transform 0.26s ease;
+}
+
+.hero__license-accent:hover::after {
+  transform: scaleX(1);
+  transform-origin: left;
 }
 
 .hero__title {
@@ -604,12 +673,6 @@ const submitLead = async (form: LeadForm) => {
 .consultation__form {
   display: grid;
   gap: 14px;
-}
-
-.hero__submit {
-  width: fit-content;
-  min-width: 168px;
-  margin-top: 18px;
 }
 
 .form-field {
@@ -663,6 +726,36 @@ const submitLead = async (form: LeadForm) => {
   grid-column: 1 / -1;
   width: min(100%, 520px);
   justify-self: center;
+}
+
+.page--reveals-ready .reveal {
+  opacity: 0;
+  transform: translate3d(0, 22px, 0);
+  filter: blur(4px);
+  transition:
+    opacity 0.68s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.68s cubic-bezier(0.22, 1, 0.36, 1),
+    filter 0.68s ease;
+  transition-delay: var(--reveal-delay, 0ms);
+  will-change: opacity, transform, filter;
+}
+
+.page--reveals-ready .reveal--visible {
+  opacity: 1;
+  transform: translate3d(0, 0, 0);
+  filter: blur(0);
+}
+
+.page--reveals-ready .services .card.reveal {
+  transform: translate3d(0, 20px, 0) scale(0.99);
+}
+
+.page--reveals-ready .services .card.reveal--visible {
+  transform: translate3d(0, 0, 0) scale(1);
+}
+
+.page--reveals-ready .services .card.reveal--visible:hover {
+  transform: translate3d(0, -4px, 0) scale(1);
 }
 
 .gallery-lazy-slot {
@@ -720,6 +813,7 @@ const submitLead = async (form: LeadForm) => {
   margin-bottom: 26px;
 }
 
+.hero__actions,
 .consultation__actions {
   display: flex;
   align-items: center;
@@ -727,6 +821,11 @@ const submitLead = async (form: LeadForm) => {
   flex-wrap: wrap;
 }
 
+.hero__actions {
+  margin-top: 18px;
+}
+
+.hero__submit,
 .consultation__actions .button {
   min-width: 180px;
 }
@@ -811,8 +910,32 @@ const submitLead = async (form: LeadForm) => {
   font-size: 18px;
 }
 
+.footer__contacts a {
+  position: relative;
+  width: fit-content;
+  padding-bottom: 4px;
+}
+
+.footer__contacts a::after {
+  content: '';
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  height: 1px;
+  background: currentColor;
+  transform: scaleX(0);
+  transform-origin: right;
+  transition: transform 0.26s ease;
+}
+
 .footer__contacts a:hover {
   text-shadow: 0 0 10px rgba(255, 255, 255, 0.4);
+}
+
+.footer__contacts a:hover::after {
+  transform: scaleX(1);
+  transform-origin: left;
 }
 
 .footer__map {
@@ -865,6 +988,27 @@ const submitLead = async (form: LeadForm) => {
 .toast-leave-to {
   opacity: 0;
   transform: translateY(12px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    transition-duration: 0.001ms !important;
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+  }
+
+  .page--reveals-ready .reveal,
+  .page--reveals-ready .services .card.reveal {
+    opacity: 1;
+    transform: none;
+    filter: none;
+  }
 }
 
 @media (max-width: 1024px) {
@@ -926,10 +1070,14 @@ const submitLead = async (form: LeadForm) => {
     line-height: 1.42;
   }
 
+  .hero__actions {
+    margin-top: 8px;
+    gap: 10px;
+  }
+
   .hero__submit {
     width: 100%;
     min-width: 0;
-    margin-top: 8px;
   }
 
   .form-status {

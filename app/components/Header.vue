@@ -57,9 +57,34 @@ import logoBlack from '~/images/icon/logo_black.svg'
   gap: 28px;
 }
 
+.site-header__link {
+  position: relative;
+  display: inline-flex;
+  padding-bottom: 4px;
+  transition: color 0.2s ease, text-shadow 0.2s ease;
+}
+
+.site-header__link::after {
+  content: '';
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  height: 1px;
+  background: currentColor;
+  transform: scaleX(0);
+  transform-origin: right;
+  transition: transform 0.26s ease;
+}
+
 .site-header__link:hover {
   color: #1a1a1a;
   text-shadow: 0 0 10px rgba(102, 119, 153, 0.5);
+}
+
+.site-header__link:hover::after {
+  transform: scaleX(1);
+  transform-origin: left;
 }
 
 @media (max-width: 980px) {
