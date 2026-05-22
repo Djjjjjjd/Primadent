@@ -45,7 +45,7 @@ import logoBlack from '~/images/icon/logo_black.svg'
 }
 
 .site-header__logo {
-  width: 248px;
+  width: clamp(170px, 20vw, 248px);
   height: auto;
   display: block;
 }
