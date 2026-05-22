@@ -564,8 +564,7 @@ const submitLead = async (form: LeadForm) => {
 .hero {
   position: relative;
   min-height: 100svh;
-  overflow: hidden;
-  background: #edf1f7;
+  background: transparent;
 }
 
 .hero::before,
@@ -589,9 +588,10 @@ const submitLead = async (form: LeadForm) => {
 }
 
 .hero__slider {
-  position: absolute;
+  position: fixed;
   inset: 0;
   z-index: 0;
+  overflow: hidden;
 }
 
 .hero__slide {
@@ -714,6 +714,7 @@ const submitLead = async (form: LeadForm) => {
   z-index: 2;
   margin-top: -54px;
   padding-bottom: 48px;
+  background: var(--bg-color);
 }
 
 .services__grid {
@@ -759,11 +760,17 @@ const submitLead = async (form: LeadForm) => {
 }
 
 .gallery-lazy-slot {
+  position: relative;
+  z-index: 1;
   min-height: 430px;
+  background: var(--bg-color);
 }
 
 .seo-content {
+  position: relative;
+  z-index: 1;
   padding: 0 0 74px;
+  background: var(--bg-color);
 }
 
 .seo-content__inner {
@@ -794,7 +801,10 @@ const submitLead = async (form: LeadForm) => {
 }
 
 .consultation {
+  position: relative;
+  z-index: 1;
   padding: 28px 0 86px;
+  background: var(--bg-color);
 }
 
 .consultation__inner {
@@ -865,6 +875,8 @@ const submitLead = async (form: LeadForm) => {
 }
 
 .footer {
+  position: relative;
+  z-index: 1;
   padding: 50px 0;
   background: #1a1a1a;
   color: #ffffff;
