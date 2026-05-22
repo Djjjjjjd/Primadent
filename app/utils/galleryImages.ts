@@ -1,6 +1,6 @@
 import { toSliderImages } from './toSliderImages'
 
-const galleryImageModules = import.meta.glob<string>('../images/slider/gallery/*.jpg', {
+const galleryImageModules = import.meta.glob<string>('../images/archive/*.jpg', {
   eager: true,
   import: 'default',
 })
