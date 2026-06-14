@@ -7,6 +7,7 @@
       <h2 class="card_title">Пародонтология</h2>
       <ul>
         <li class="cardText">Профессиональная гигиена полости рта</li>
+        <li class="cardText">Лечение и профилактика по протоколу GBT</li>
         <li class="cardText">Вектор-терапия</li>
         <li class="cardText">Плазмолифтинг</li>
         <li class="cardText">Шинирование зубов</li>
