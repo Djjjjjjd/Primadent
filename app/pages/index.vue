@@ -210,7 +210,7 @@
             <a href="https://yandex.com/maps/-/CDRAyD82">83015, г. Донецк, ул. Челюскинцев, 167</a>
             <a href="tel:+79493455165">Телефон: +7(949) 345-51-65</a>
             <p>С 9:00 до 18:00, выходной - воскресенье</p>
-            <a href="mailto:PrimaDentStomat@gmail.ru">e-mail: PrimaDentStomat@gmail.ru</a>
+            <a href="mailto:primadentklinika@yandex.ru">e-mail: primadentklinika@yandex.ru</a>
           </div>
         </div>
 
@@ -274,7 +274,7 @@ const pageTitle = 'Стоматология Примадент в Донецке
 const pageDescription = 'Стоматологическая клиника Примадент в Донецке: лечение зубов, хирургия, ортопедия, ортодонтия, пародонтология и консультации. Адрес: ул. Челюскинцев, 167.'
 const pageKeywords = 'стоматология Донецк, стоматолог Донецк, Примадент, лечение зубов Донецк, протезирование зубов, ортодонт Донецк, хирургическая стоматология'
 const telegramBotUrl = 'https://t.me/primadent1_bot'
-const maxBotUrl = 'https://max.ru/primadent1_bot'
+const maxBotUrl = 'https://max.ru/u/f9LHodD0cOK1HdZFTm8dJpCi9n4KeViJ6EAoP64ossKmu6Nulgc1Y-yturU'
 
 const heroSlides = heroImages
 
