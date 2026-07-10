@@ -1,4 +1,6 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
+const apiBase = (process.env.NUXT_PUBLIC_API_BASE || 'https://primadent-contact.onrender.com').replace(/\/$/, '')
+
 export default defineNuxtConfig({
   compatibilityDate: '2025-07-15',
   devtools: { enabled: false },
@@ -20,7 +22,7 @@ export default defineNuxtConfig({
           "font-src 'self' https://fonts.gstatic.com",
           "img-src 'self' data: https:",
           "frame-src https://yandex.ru https://yandex.com",
-          "connect-src 'self' http://127.0.0.1:* http://localhost:* ws://127.0.0.1:* ws://localhost:*",
+          `connect-src 'self' ${apiBase} http://127.0.0.1:* http://localhost:* ws://127.0.0.1:* ws://localhost:*`,
           "form-action 'self'",
           "upgrade-insecure-requests",
         ].join('; '),
@@ -52,11 +54,10 @@ export default defineNuxtConfig({
     },
   },
   runtimeConfig: {
-    telegramBotToken: process.env.TELEGRAM_BOT_TOKEN,
-    telegramChatId: process.env.TELEGRAM_CHAT_ID,
     public: {
-      siteUrl: process.env.NUXT_PUBLIC_SITE_URL || 'https://primadent.onrender.com',
+      siteUrl: process.env.NUXT_PUBLIC_SITE_URL || 'https://primadentdonetsk.ru',
       siteName: 'Примадент',
+      apiBase,
     },
   },
 })

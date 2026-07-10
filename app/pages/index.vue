@@ -529,7 +529,9 @@ const submitLead = async (form: LeadForm) => {
   form.message = ''
 
   try {
-    await $fetch('/api/contact', {
+    const { apiBase } = useRuntimeConfig().public
+
+    await $fetch(`${apiBase}/api/contact`, {
       method: 'POST',
       body: {
         name: form.name,
