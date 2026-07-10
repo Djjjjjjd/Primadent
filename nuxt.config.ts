@@ -1,5 +1,5 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
-const apiBase = (process.env.NUXT_PUBLIC_API_BASE || 'https://primadent-contact.onrender.com').replace(/\/$/, '')
+const apiBase = (process.env.NUXT_PUBLIC_API_BASE || 'https://primadentdonetsk.ru').replace(/\/$/, '')
 
 export default defineNuxtConfig({
   compatibilityDate: '2025-07-15',
