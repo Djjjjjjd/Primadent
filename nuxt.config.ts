@@ -22,7 +22,7 @@ export default defineNuxtConfig({
           "font-src 'self' https://fonts.gstatic.com",
           "img-src 'self' data: https:",
           "frame-src https://yandex.ru https://yandex.com",
-          `connect-src 'self' ${apiBase} http://127.0.0.1:* http://localhost:* ws://127.0.0.1:* ws://localhost:*`,
+          `connect-src 'self' ${apiBase} https://primadent-api.onrender.com http://127.0.0.1:* http://localhost:* ws://127.0.0.1:* ws://localhost:*`,
           "form-action 'self'",
           "upgrade-insecure-requests",
         ].join('; '),
