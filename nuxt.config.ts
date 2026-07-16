@@ -1,4 +1,6 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
+const apiBase = (process.env.NUXT_PUBLIC_API_BASE || 'https://primadentdonetsk.ru').replace(/\/$/, '')
+
 export default defineNuxtConfig({
   compatibilityDate: '2025-07-15',
   devtools: { enabled: false },
@@ -20,7 +22,7 @@ export default defineNuxtConfig({
           "font-src 'self' https://fonts.gstatic.com",
           "img-src 'self' data: https:",
           "frame-src https://yandex.ru https://yandex.com",
-          "connect-src 'self' http://127.0.0.1:* http://localhost:* ws://127.0.0.1:* ws://localhost:*",
+          `connect-src 'self' ${apiBase} http://127.0.0.1:* http://localhost:* ws://127.0.0.1:* ws://localhost:*`,
           "form-action 'self'",
           "upgrade-insecure-requests",
         ].join('; '),
@@ -43,14 +45,19 @@ export default defineNuxtConfig({
           href: 'https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Montserrat:wght@600;700;800&display=swap',
         },
       ],
+      script: [
+        {
+          type: 'text/javascript',
+          innerHTML: `(function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};m[i].l=1*new Date();for (var j = 0; j < document.scripts.length; j++) {if (document.scripts[j].src === r) { return; }}k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)})(window, document,'script','https://mc.yandex.ru/metrika/tag.js?id=110089509', 'ym');ym(110089509, 'init', {ssr:true, webvisor:true, clickmap:true, ecommerce:"dataLayer", referrer: document.referrer, url: location.href, accurateTrackBounce:true, trackLinks:true});`,
+        },
+      ],
     },
   },
   runtimeConfig: {
-    telegramBotToken: process.env.TELEGRAM_BOT_TOKEN,
-    telegramChatId: process.env.TELEGRAM_CHAT_ID,
     public: {
-      siteUrl: process.env.NUXT_PUBLIC_SITE_URL || 'https://primadent.onrender.com',
+      siteUrl: process.env.NUXT_PUBLIC_SITE_URL || 'https://primadentdonetsk.ru',
       siteName: 'Примадент',
+      apiBase,
     },
   },
 })
