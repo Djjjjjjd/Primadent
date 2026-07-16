@@ -267,6 +267,7 @@ const PHONE_PATTERN = /^[+\d\s()-]+$/
 const PHONE_DIGITS_MIN = 10
 const PHONE_DIGITS_MAX = 15
 const HERO_SLIDE_INTERVAL = 2000
+const CONTACT_API = 'https://primadent-api.onrender.com/api/contact'
 const config = useRuntimeConfig()
 const siteUrl = String(config.public.siteUrl).replace(/\/$/, '')
 const siteName = String(config.public.siteName)
@@ -529,16 +530,22 @@ const submitLead = async (form: LeadForm) => {
   form.message = ''
 
   try {
-    await $fetch('/api/contact', {
+    const response = await fetch(CONTACT_API, {
       method: 'POST',
-      body: {
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
         name: form.name,
         phone: form.phone,
         message: '',
         website: form.website,
         formStartedAt: form.formStartedAt,
-      },
+      }),
     })
+
+    if (!response.ok) {
+      const error = await response.json()
+      throw new Error(error.error || 'Ошибка при отправке')
+    }
 
     form.name = ''
     form.phone = ''
@@ -549,7 +556,7 @@ const submitLead = async (form: LeadForm) => {
     showSuccessToast()
   } catch (error: any) {
     form.status = 'error'
-    form.message = error?.data?.message || 'Не удалось отправить заявку. Попробуйте ещё раз.'
+    form.message = error?.message || 'Не удалось отправить заявку. Попробуйте ещё раз.'
   } finally {
     form.pending = false
   }
