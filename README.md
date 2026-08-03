@@ -1,75 +1,42 @@
-# Nuxt Minimal Starter
+﻿# Primadent
 
-Look at the [Nuxt documentation](https://nuxt.com/docs/getting-started/introduction) to learn more.
+Проект разделен на две части без фронтенд-фреймворков:
 
-## Setup
+- `static-site/` — готовый статичный сайт для Beget: HTML, CSS, JS и ассеты.
+- `server.js` — Node.js API для Render, принимает заявки и отправляет уведомления в Telegram.
 
-Make sure to install dependencies:
+## Beget
+
+Загрузите содержимое папки `static-site/` в корень сайта на Beget.
+
+Форма отправляет заявки на:
+
+```txt
+https://primadent-api.onrender.com/api/contact
+```
+
+Если URL сервиса Render изменится, обновите `CONTACT_API` в `static-site/assets/js/main.js`.
+
+## Render
+
+В Render используйте корень репозитория:
 
 ```bash
-# npm
 npm install
-
-# pnpm
-pnpm install
-
-# yarn
-yarn install
-
-# bun
-bun install
+npm start
 ```
 
-## Development Server
+Переменные окружения:
 
-Start the development server on `http://localhost:3000`:
-
-```bash
-# npm
-npm run dev
-
-# pnpm
-pnpm dev
-
-# yarn
-yarn dev
-
-# bun
-bun run dev
+```env
+TELEGRAM_BOT_TOKEN=
+TELEGRAM_CHAT_ID=
+ALLOWED_ORIGINS=https://primadentdonetsk.ru,https://www.primadentdonetsk.ru
 ```
 
-## Production
+## API
 
-Build the application for production:
+- `GET /health` — проверка сервиса.
+- `POST /api/contact` — отправка заявки.
 
-```bash
-# npm
-npm run build
-
-# pnpm
-pnpm build
-
-# yarn
-yarn build
-
-# bun
-bun run build
-```
-
-Locally preview production build:
-
-```bash
-# npm
-npm run preview
-
-# pnpm
-pnpm preview
-
-# yarn
-yarn preview
-
-# bun
-bun run preview
-```
-
-Check out the [deployment documentation](https://nuxt.com/docs/getting-started/deployment) for more information.
+В API есть серверная валидация, honeypot, минимальное время заполнения формы и rate limit: 5 заявок за 10 минут с одного IP.

@@ -1,4 +1,4 @@
-services:
+﻿services:
   - type: web
     name: primadent-api
     runtime: node
@@ -7,8 +7,10 @@ services:
     startCommand: npm start
     envVars:
       - key: TELEGRAM_BOT_TOKEN
-        scope: build
+        sync: false
       - key: TELEGRAM_CHAT_ID
-        scope: build
+        sync: false
+      - key: ALLOWED_ORIGINS
+        value: "*"
       - key: NODE_ENV
         value: production
